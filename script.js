@@ -4,7 +4,7 @@ const canvas = document.getElementById('outputCanvas');
 const ctx = canvas.getContext('2d');
 
 let session;
-ort.InferenceSession.create("best_quant.onnx").then(s => session = s);
+ort.InferenceSession.create("best.onnx").then(s => session = s);
 
 function handleFileUpload(event) {
   const file = event.target.files[0];
@@ -67,10 +67,10 @@ async function detect() {
 
   const classNames = [
     "Angry", "Disgust", "Excited", "Fear", "Happy",
-    "Sad", "Serious", "Thinking", "Worried"
+    "Sad", "Serious", "Thinking", "Worried", "neutral"
   ];
 
-  const numDetections = output.length / 14;
+  const numDetections = output.length / 15;
   console.log("🔎 Total boxes:", numDetections);
 
   ctx.drawImage(tempCanvas, 0, 0);
@@ -78,13 +78,13 @@ async function detect() {
   let anyDetected = false;
 
   for (let i = 0; i < numDetections; i++) {
-    const offset = i * 14;
+    const offset = i * 15;
     const x = output[offset];
     const y = output[offset + 1];
     const w = output[offset + 2];
     const h = output[offset + 3];
     const objConf = output[offset + 4];
-    const classScores = output.slice(offset + 5, offset + 14);
+    const classScores = output.slice(offset + 5, offset + 15);
     const maxScore = Math.max(...classScores);
     const classIndex = classScores.indexOf(maxScore);
     const conf = objConf * maxScore;
