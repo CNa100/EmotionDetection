@@ -4,7 +4,9 @@ const canvas = document.getElementById('outputCanvas');
 const ctx = canvas.getContext('2d');
 
 let session;
-ort.InferenceSession.create("best.onnx").then(s => session = s);
+ort.InferenceSession.create("https://drive.google.com/uc?export=download&id=1EpxYIq6HgMkuuu5ac0CNQQ4-2YUb-d2A")
+  .then(s => session = s)
+  .catch(err => alert("❌ خطا در بارگذاری مدل: " + err.message));
 
 function handleFileUpload(event) {
   const file = event.target.files[0];
@@ -28,10 +30,15 @@ function openCamera(useFrontCamera) {
     imgEl.classList.add('hidden');
     canvas.classList.add('hidden');
   })
-  .catch(err => alert("Camera access denied."));
+  .catch(err => alert("❌ اجازه دسترسی به دوربین داده نشد."));
 }
 
 async function detect() {
+  if (!session) {
+    alert("مدل هنوز بارگذاری نشده است.");
+    return;
+  }
+
   canvas.width = 640;
   canvas.height = 640;
   canvas.classList.remove("hidden");
