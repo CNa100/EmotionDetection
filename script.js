@@ -32,6 +32,8 @@ function openCamera(useFrontCamera) {
 }
 
 async function detect() {
+  canvas.width = 640;
+  canvas.height = 640;
   canvas.classList.remove("hidden");
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -68,8 +70,12 @@ async function detect() {
     "Sad", "Serious", "Thinking", "Worried"
   ];
 
-  ctx.drawImage(tempCanvas, 0, 0);
   const numDetections = output.length / 14;
+  console.log("🔎 Total boxes:", numDetections);
+
+  ctx.drawImage(tempCanvas, 0, 0);
+
+  let anyDetected = false;
 
   for (let i = 0; i < numDetections; i++) {
     const offset = i * 14;
@@ -83,9 +89,12 @@ async function detect() {
     const classIndex = classScores.indexOf(maxScore);
     const conf = objConf * maxScore;
 
-    if (conf > 0.5) {
+    if (conf > 0.2) {
+      anyDetected = true;
       const left = (x - w / 2);
       const top = (y - h / 2);
+
+      console.log(`✅ Detection: ${classNames[classIndex]} (${(conf * 100).toFixed(1)}%)`);
 
       ctx.strokeStyle = "lime";
       ctx.lineWidth = 2;
@@ -95,5 +104,9 @@ async function detect() {
       ctx.font = "16px Arial";
       ctx.fillText(`${classNames[classIndex]} (${(conf * 100).toFixed(1)}%)`, left, top - 5);
     }
+  }
+
+  if (!anyDetected) {
+    console.log("⚠️ هیچ چیزی تشخیص داده نشد.");
   }
 }
